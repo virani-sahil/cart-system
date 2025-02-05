@@ -6,11 +6,10 @@ import { UserContext } from "./components/UserContext";
 
 
 function App() {
-
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(JSON.parse(localStorage.getItem("cartitems")) || []);
 
   return (
-    <UserContext.Provider value={{cart, setCart}}>
+    <UserContext.Provider value={{ cart, setCart }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Page />} />
@@ -18,7 +17,6 @@ function App() {
         </Routes>
       </BrowserRouter>
     </UserContext.Provider>
-
   )
 }
 

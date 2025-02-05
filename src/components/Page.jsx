@@ -10,15 +10,13 @@ const Page = () => {
     const [category, setCategory] = useState(localStorage.getItem("category") || "ALL");
     const [data, setData] = useState(products);
     const [count, setCount] = useState(0);
-
     const { cart, setCart } = useContext(UserContext)
 
-    function hnadlesearchCategory(event) {
+    function handlesearchCategory(event) {
         const val = event.target.value;
         setSearch(val);
 
-        const filteredData = products.filter((ele) =>
-            ele.name.toLowerCase()).startsWith(val.toLowerCase());
+        const filteredData = products.filter((ele) => (ele.name.toLowerCase()).startsWith(val.toLowerCase()));
         setData(filteredData);
     }
 
@@ -39,12 +37,28 @@ const Page = () => {
     // using Context ===========
 
     function handleAddtoCart(index) {
-        const selectedProduct = data.find((ele, ind) => ind === index);
-        setCart([...cart, selectedProduct])
+        const selectedProduct = data[index];
+        const cartItems = JSON.parse(localStorage.getItem("cartitems")) || [];
+        const isItemInCart = cartItems.find((ele) => ele.id === selectedProduct.id);
+
+        if (isItemInCart) {
+            const updatedCart = cartItems.map((ele) =>
+                ele.id === selectedProduct.id ? { ...ele, count: ele.count + 1 } : ele
+            );
+            localStorage.setItem("cartitems", JSON.stringify(updatedCart));
+            setCart(updatedCart);
+            alert("add Again")
+        } else {
+            const updatedCart = [...cartItems, selectedProduct];
+            localStorage.setItem("cartitems", JSON.stringify(updatedCart));
+            setCart(updatedCart);
+            alert("Added");
+            // setCount(updatedCart.length);
+        }
     }
 
     useEffect(() => {
-        setCount(cart.length);
+        setCount(cart?.length);
     }, [cart])
 
     useEffect(() => {
@@ -60,7 +74,7 @@ const Page = () => {
         <div className="p-2">
             <div className="flex justify-between">
                 <div>
-                    <input type="text" value={search} placeholder="search product" className="border p-1" onChange={hnadlesearchCategory} />
+                    <input type="text" value={search} placeholder="search product" className="border p-1" onChange={handlesearchCategory} />
                     <select name="product" id="category" value={category} className="border p-1" onChange={handlesetCategory}>
                         <option value="ALL">Select Category</option>
                         <option value="Electronics">Electronics</option>
@@ -73,7 +87,7 @@ const Page = () => {
                     </select>
                 </div>
                 <div>
-                    <button className="bg-yellow-400 rounded-xl p-2"><Link to="/cart">Cart</Link></button>
+                    <button className=""><Link to="/cart" className="bg-yellow-400 rounded-xl p-2">Cart</Link></button>
                     <button className="bg-black text-white p-1 rounded">{count}</button>
                 </div>
             </div>
